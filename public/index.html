@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>TON Miner</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app-container">
+        <!-- উপরের ব্যালেন্স বার -->
+        <header class="top-bar">
+            <div class="balance-display ton-balance">
+                <img src="https://i.ibb.co/2N3WmsN/ton-icon.png" alt="TON">
+                <span id="ton-balance-val">0.00</span>
+            </div>
+            <div class="balance-display diamond-balance">
+                <img src="https://i.ibb.co/7jZ4z6B/diamond.png" alt="💎">
+                <span id="diamond-balance-val">0</span>
+            </div>
+            <div class="balance-display mining-rate">
+                <img src="https://i.ibb.co/XzYQJ6Q/stopwatch-icon.png" alt="Rate">
+                <span id="mining-rate-val">0/S</span>
+            </div>
+        </header>
+
+        <div class="user-info-bar">
+            <span>Lv.<span id="user-level">1</span> (uid: <span id="user-id">...</span>)</span>
+        </div>
+
+        <!-- মূল কন্টেন্ট এরিয়া -->
+        <main class="main-content">
+            <aside class="left-sidebar">
+                <button class="side-button" id="withdraw-btn">
+                    <img src="https://i.ibb.co/Qvj0B0x/withdraw-icon.png" alt="Withdraw">
+                    <span>Withdraw</span>
+                </button>
+                <button class="side-button" id="tasks-btn">
+                    <img src="https://i.ibb.co/hK7JqJ8/task-icon.png" alt="Tasks">
+                    <span>Tasks</span>
+                </button>
+            </aside>
+            <div class="center-content">
+                <img src="https://i.ibb.co/L5hYy1F/ton-character.png" alt="TON Character" id="main-character">
+            </div>
+            <aside class="right-sidebar">
+                <button class="side-button" id="invite-btn">
+                    <img src="https://i.ibb.co/wJtWc9c/invite-icon.png" alt="Invite">
+                    <span>Invite</span>
+                </button>
+                <button class="side-button" id="luckbag-btn">
+                    <img src="https://i.ibb.co/27zD7Sg/luckbag-icon.png" alt="Luckbag">
+                    <span>Luckbag</span>
+                </button>
+            </aside>
+        </main>
+
+        <!-- মাইনিং ফ্লোর -->
+        <section id="floors-container">
+            <!-- Loading... -->
+        </section>
+
+        <!-- নিচের নেভিগেশন বার -->
+        <footer class="bottom-nav">
+            <button class="nav-button" id="ranking-btn">
+                <img src="https://i.ibb.co/pwnS5s5/ranking-icon.png" alt="Ranking">
+                <span>Ranking</span>
+            </button>
+            <button class="nav-button" id="friends-btn">
+                <img src="https://i.ibb.co/YbfFFyM/friends-icon.png" alt="Friends">
+                <span>Friends</span>
+            </button>
+            <button class="nav-button" id="theft-record-btn">
+                <img src="https://i.ibb.co/XW3NHDM/theft-icon.png" alt="Theft Record">
+                <span>Theft Record</span>
+            </button>
+        </footer>
+        
+        <!-- Modal Pop-ups -->
+        <div id="modals-container"></div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
