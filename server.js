@@ -8,27 +8,27 @@ const admin = require('firebase-admin');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public')); // Mini App ফাইলগুলো পরিবেশন করার জন্য
+app.use(express.static('public'));
 
-// Firebase Admin SDK ইনিশিয়ালাইজেশন
+// Firebase Admin SDK
 const serviceAccount = JSON.parse(Buffer.from(process.env.FIREBASE_CONFIG, 'base64').toString('ascii'));
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 const db = admin.firestore();
 
-// Telegram Bot ইনিশিয়ালাইজেশন
+// Telegram Bot
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 const WEB_APP_URL = process.env.BASE_URL;
 
-// --- GAME CONFIGURATION (Source of Truth) ---
+// --- GAME CONFIGURATION (The single source of truth for our game's economy) ---
 const floorsConfig = {
-    1: { rate: 0.000005, unlock_cost: 0, capacity: 3600 }, // 1 hour capacity
-    2: { rate: 0.00001, unlock_cost: 5, capacity: 7200 }, // 2 hours capacity
-    3: { rate: 0.00015, unlock_cost: 15, capacity: 10800 },
-    4: { rate: 0.0005, unlock_cost: 25, capacity: 14400 },
-    5: { rate: 0.001, unlock_cost: 50, capacity: 21600 },
-    6: { rate: 0.0015, unlock_cost: 200, capacity: 43200 },
+    1: { rate: 0.000005, unlock_cost: 0, capacity_hours: 4 },
+    2: { rate: 0.00001,  unlock_cost: 5, capacity_hours: 4 },
+    3: { rate: 0.00015, unlock_cost: 15, capacity_hours: 4 },
+    4: { rate: 0.0005,  unlock_cost: 25, capacity_hours: 4 },
+    5: { rate: 0.001,   unlock_cost: 50, capacity_hours: 4 },
+    6: { rate: 0.0015,  unlock_cost: 200, capacity_hours: 4 },
 };
 
 // --- TELEGRAM BOT LOGIC ---
@@ -41,7 +41,7 @@ bot.onText(/\/start(?: (.+))?/, async (msg, match) => {
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
-        // নতুন ব্যবহারকারী তৈরি
+        // Create a new user
         const initialFloorData = {};
         initialFloorData['1'] = { last_collected: admin.firestore.FieldValue.serverTimestamp() };
 
@@ -58,7 +58,6 @@ bot.onText(/\/start(?: (.+))?/, async (msg, match) => {
             joined: admin.firestore.FieldValue.serverTimestamp()
         });
 
-        // রেফারারকে পুরস্কৃত করা
         if (referrerId) {
             const referrerRef = db.collection('users').doc(referrerId);
             await referrerRef.update({
@@ -78,7 +77,7 @@ bot.onText(/\/start(?: (.+))?/, async (msg, match) => {
 
 // --- API ENDPOINTS ---
 
-// 1. Get User Data (অ্যাপ লোড হওয়ার সময়)
+// 1. Get User Data
 app.get('/api/user-data/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -86,7 +85,7 @@ app.get('/api/user-data/:userId', async (req, res) => {
         const doc = await userRef.get();
 
         if (!doc.exists) {
-            return res.status(404).send('User not found. Please start the bot first.');
+            return res.status(404).send('User not found. Please start the bot first via /start command.');
         }
 
         const userData = doc.data();
@@ -106,12 +105,13 @@ app.get('/api/user-data/:userId', async (req, res) => {
             if (isUnlocked) {
                 const lastCollectedDate = userData.floor_data[floorId].last_collected.toDate();
                 const secondsPassed = Math.floor((now - lastCollectedDate) / 1000);
-                const capacitySeconds = config.capacity / config.rate;
+                const capacitySeconds = config.capacity_hours * 3600;
                 const accumulatedSeconds = Math.min(secondsPassed, capacitySeconds);
                 const earnings = accumulatedSeconds * config.rate;
+                const remainingSeconds = capacitySeconds - accumulatedSeconds;
 
                 floorData.earnings = earnings;
-                floorData.timer = new Date((capacitySeconds - accumulatedSeconds) * 1000).toISOString().substr(11, 8);
+                floorData.timer = new Date(remainingSeconds * 1000).toISOString().substr(11, 8);
             } else {
                 floorData.unlock_cost = config.unlock_cost;
             }
@@ -119,7 +119,7 @@ app.get('/api/user-data/:userId', async (req, res) => {
         }
 
         res.status(200).json({
-            level: 1, // লেভেল লজিক পরে যোগ করা হবে
+            level: 1, // Static for now
             userId: userData.userId,
             ton_balance: userData.ton_balance,
             diamonds: userData.diamonds,
@@ -146,7 +146,7 @@ app.post('/api/collect', async (req, res) => {
     
     const lastCollectedDate = userData.floor_data[floorId].last_collected.toDate();
     const secondsPassed = Math.floor((new Date() - lastCollectedDate) / 1000);
-    const capacitySeconds = config.capacity / config.rate;
+    const capacitySeconds = config.capacity_hours * 3600;
     const accumulatedSeconds = Math.min(secondsPassed, capacitySeconds);
     const earnings = accumulatedSeconds * config.rate;
 
@@ -171,30 +171,30 @@ app.post('/api/unlock-floor', async (req, res) => {
     if (!doc.exists) return res.status(404).send('User not found.');
 
     const userData = doc.data();
-    const nextFloor = userData.unlocked_floors + 1;
+    const nextFloorToUnlock = userData.unlocked_floors + 1;
 
-    if (parseInt(floorId) !== nextFloor) {
-        return res.status(400).send('You must unlock floors in order.');
+    if (parseInt(floorId) !== nextFloorToUnlock) {
+        return res.status(400).send('You must unlock floors sequentially.');
     }
 
-    const config = floorsConfig[nextFloor];
+    const config = floorsConfig[nextFloorToUnlock];
     if (userData.diamonds < config.unlock_cost) {
         return res.status(400).send('Not enough diamonds!');
     }
     
-    const newFloorDataPath = `floor_data.${nextFloor}`;
+    const newFloorDataPath = `floor_data.${nextFloorToUnlock}`;
     await userRef.update({
         diamonds: admin.firestore.FieldValue.increment(-config.unlock_cost),
-        unlocked_floors: nextFloor,
+        unlocked_floors: nextFloorToUnlock,
         total_mining_rate: admin.firestore.FieldValue.increment(config.rate),
         [newFloorDataPath]: { last_collected: admin.firestore.FieldValue.serverTimestamp() }
     });
 
-    res.status(200).json({ message: `Floor ${nextFloor} unlocked successfully!` });
+    res.status(200).json({ message: `Floor ${nextFloorToUnlock} unlocked successfully!` });
 });
 
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}. Bot polling...`);
 });

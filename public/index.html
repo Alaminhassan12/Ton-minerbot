@@ -11,15 +11,15 @@
     <div id="app-container">
         <!-- উপরের ব্যালেন্স বার -->
         <header class="top-bar">
-            <div class="balance-display ton-balance">
+            <div class.balance-display.ton-balance>
                 <img src="https://i.ibb.co/2N3WmsN/ton-icon.png" alt="TON">
                 <span id="ton-balance-val">0.00</span>
             </div>
-            <div class="balance-display diamond-balance">
+            <div class.balance-display.diamond-balance>
                 <img src="https://i.ibb.co/7jZ4z6B/diamond.png" alt="💎">
                 <span id="diamond-balance-val">0</span>
             </div>
-            <div class="balance-display mining-rate">
+            <div class.balance-display.mining-rate>
                 <img src="https://i.ibb.co/XzYQJ6Q/stopwatch-icon.png" alt="Rate">
                 <span id="mining-rate-val">0/S</span>
             </div>
@@ -32,11 +32,11 @@
         <!-- মূল কন্টেন্ট এরিয়া -->
         <main class="main-content">
             <aside class="left-sidebar">
-                <button class="side-button" id="withdraw-btn">
+                <button class="side-button" data-modal="withdraw-modal">
                     <img src="https://i.ibb.co/Qvj0B0x/withdraw-icon.png" alt="Withdraw">
                     <span>Withdraw</span>
                 </button>
-                <button class="side-button" id="tasks-btn">
+                <button class="side-button" data-modal="tasks-modal">
                     <img src="https://i.ibb.co/hK7JqJ8/task-icon.png" alt="Tasks">
                     <span>Tasks</span>
                 </button>
@@ -45,11 +45,11 @@
                 <img src="https://i.ibb.co/L5hYy1F/ton-character.png" alt="TON Character" id="main-character">
             </div>
             <aside class="right-sidebar">
-                <button class="side-button" id="invite-btn">
+                <button class="side-button" data-modal="invite-modal">
                     <img src="https://i.ibb.co/wJtWc9c/invite-icon.png" alt="Invite">
                     <span>Invite</span>
                 </button>
-                <button class="side-button" id="luckbag-btn">
+                <button class="side-button" data-modal="luckbag-modal">
                     <img src="https://i.ibb.co/27zD7Sg/luckbag-icon.png" alt="Luckbag">
                     <span>Luckbag</span>
                 </button>
@@ -58,27 +58,86 @@
 
         <!-- মাইনিং ফ্লোর -->
         <section id="floors-container">
-            <!-- Loading... -->
+            <div class="loading">Loading Floors...</div>
         </section>
 
         <!-- নিচের নেভিগেশন বার -->
         <footer class="bottom-nav">
-            <button class="nav-button" id="ranking-btn">
+            <button class="nav-button" data-modal="ranking-modal">
                 <img src="https://i.ibb.co/pwnS5s5/ranking-icon.png" alt="Ranking">
                 <span>Ranking</span>
             </button>
-            <button class="nav-button" id="friends-btn">
+            <button class="nav-button" data-modal="friends-modal">
                 <img src="https://i.ibb.co/YbfFFyM/friends-icon.png" alt="Friends">
                 <span>Friends</span>
             </button>
-            <button class="nav-button" id="theft-record-btn">
+            <button class="nav-button" data-modal="theft-record-modal">
                 <img src="https://i.ibb.co/XW3NHDM/theft-icon.png" alt="Theft Record">
                 <span>Theft Record</span>
             </button>
         </footer>
         
         <!-- Modal Pop-ups -->
-        <div id="modals-container"></div>
+        <div id="modals-container">
+             <!-- Withdraw Modal -->
+            <div id="withdraw-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>WITHDRAW</h2>
+                    <div class="withdraw-card">
+                        <div class="withdraw-balance">
+                            <img src="https://i.ibb.co/2N3WmsN/ton-icon.png" alt="TON"> 
+                            <span id="withdraw-balance-val">0.00 TON</span>
+                        </div>
+                        <p>Select Withdrawal Amount</p>
+                        <div class="withdraw-package">
+                           <span>2000 TON</span>
+                           <button>Withdraw (Fee: 5 💎)</button>
+                        </div>
+                         <div class="withdraw-package">
+                           <span>200000 TON</span>
+                           <button>Withdraw (Fee: 200 💎)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invite Modal -->
+            <div id="invite-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>INVITATION</h2>
+                    <div class="invite-card">
+                        <h3>REFER & EARN</h3>
+                        <p>Inviting 1 friend earns 2 diamonds, with a maximum of 20 diamonds per day.</p>
+                    </div>
+                    <h4>Invitation link</h4>
+                    <div class="referral-box">
+                        <input type="text" id="referral-link" readonly value="Loading...">
+                        <button id="copy-link-btn">copy</button>
+                    </div>
+                    <h4>INVITATION RECORD</h4>
+                    <div id="referral-list">No records yet.</div>
+                </div>
+            </div>
+
+            <!-- Tasks Modal -->
+            <div id="tasks-modal" class="modal">
+                 <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>TASK</h2>
+                    <div id="task-list">
+                         <div class="task-item">
+                            <div>
+                                <h4>🚀 Join Our Community</h4>
+                                <p>Get 5 diamonds for joining!</p>
+                            </div>
+                            <button class="go-btn">go</button>
+                         </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
