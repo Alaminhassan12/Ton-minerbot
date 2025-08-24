@@ -18,10 +18,20 @@
             <div class="balance-display diamond-balance">
                 <img src="https://i.postimg.cc/PJpTRVrK/diamond.png" alt="💎">
                 <span id="diamond-balance-val">0</span>
+                <button class="plus-icon" id="refer-plus-btn" title="Refer Friends">
+                    <span>+</span>
+                </button>
             </div>
             <div class="balance-display mining-rate">
                 <img src="https://i.postimg.cc/1tppqSF1/mining-clock.png" alt="Rate">
                 <span id="mining-rate-val">0/S</span>
+            </div>
+            <div class="balance-display language-btn">
+                <button class="lang-button" id="language-btn">EN</button>
+                <div class="lang-dropdown" id="lang-dropdown">
+                    <div class="lang-option" data-lang="en">🇺🇸 EN</div>
+                    <div class="lang-option" data-lang="bn">🇧🇩 বাং</div>
+                </div>
             </div>
         </header>
 
@@ -29,7 +39,7 @@
             <span>Lv.<span id="user-level">1</span> (uid: <span id="user-id">...</span>)</span>
         </div>
 
-        <!-- মূল কন্টেন্ট এরিয়া -->
+        <!-- মূল কন্টেন্ট এরিয়া -->
         <main class="main-content">
             <aside class="left-sidebar">
                 <button class="side-button" data-modal="withdraw-modal">
@@ -79,7 +89,7 @@
         
         <!-- Modal Pop-ups -->
         <div id="modals-container">
-             <!-- Withdraw Modal -->
+            <!-- Withdraw Modal -->
             <div id="withdraw-modal" class="modal">
                 <div class="modal-content">
                     <span class="close-btn">&times;</span>
@@ -90,11 +100,31 @@
                             <span id="withdraw-balance-val">0.00 TON</span>
                         </div>
                         <p>Select Withdrawal Amount</p>
-                        <div class="withdraw-package">
-                           <span>2000 TON</span>
-                           <button>Withdraw (Fee: 5 💎)</button>
+                        <div class="withdraw-package" data-amount="2000" data-fee="0">
+                            <span>2000 TON</span>
+                            <button class="withdraw-btn">
+                                <img src="https://i.postimg.cc/PJpTRVrK/diamond.png" alt="💎"> 0
+                                <span>Withdraw To Rovex</span>
+                            </button>
+                        </div>
+                        <div class="withdraw-package" data-amount="200000" data-fee="200">
+                            <span>200000 TON</span>
+                            <button class="withdraw-btn disabled">
+                                <img src="https://i.postimg.cc/PJpTRVrK/diamond.png" alt="💎"> 200
+                                <span>Withdraw To Binance</span>
+                            </button>
+                            <button class="withdraw-btn rovex-btn">
+                                <img src="https://i.postimg.cc/PJpTRVrK/diamond.png" alt="💎"> 200184
+                                <span>Withdraw To Rovex</span>
+                            </button>
                         </div>
                     </div>
+                    <p style="text-align: center; margin-top: 15px;">
+                        <a href="#" style="color: #666; text-decoration: underline;">Register a Binance account</a>
+                    </p>
+                    <p style="text-align: right; margin-top: 10px;">
+                        <a href="#" style="color: #666; text-decoration: underline;">Record ></a>
+                    </p>
                 </div>
             </div>
 
@@ -112,10 +142,92 @@
                         <input type="text" id="referral-link" readonly value="Loading...">
                         <button id="copy-link-btn">copy</button>
                     </div>
+                    <h4>INVITATION RECORD</h4>
+                    <div id="invitation-records">
+                        <div class="loading">Loading...</div>
+                    </div>
                 </div>
             </div>
-            
-            <!-- বাকী Modal গুলো এখানে যোগ করা হবে -->
+
+            <!-- Tasks Modal -->
+            <div id="tasks-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>TASK</h2>
+                    <div id="tasks-list">
+                        <div class="loading">Loading Tasks...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ranking Modal -->
+            <div id="ranking-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>RANKING</h2>
+                    <div class="ranking-tabs">
+                        <button class="ranking-tab active" data-type="level">LEVEL</button>
+                        <button class="ranking-tab" data-type="diamond">diamond</button>
+                        <button class="ranking-tab" data-type="invitation">invitation</button>
+                        <button class="ranking-tab" data-type="token">token</button>
+                    </div>
+                    <div id="ranking-list">
+                        <div class="loading">Loading Rankings...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friends Modal -->
+            <div id="friends-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>FRIENDS</h2>
+                    <div class="friends-tabs">
+                        <button class="friends-tab active" data-type="friends">friends list</button>
+                        <button class="friends-tab" data-type="add">add friends</button>
+                    </div>
+                    <div id="friends-list">
+                        <div class="loading">Loading Friends...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theft Record Modal -->
+            <div id="theft-record-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>sealing records</h2>
+                    <div id="theft-records">
+                        <div class="loading">Loading Records...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Luckbag Modal -->
+            <div id="luckbag-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h2 style="background: linear-gradient(45deg, #ff6b6b, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">luck bag</h2>
+                    <div class="luckbag-card">
+                        <div class="luckbag-balance">
+                            <img src="https://i.postimg.cc/906sRRfW/ton.png" alt="TON">
+                            <span>TON balance</span>
+                            <span id="luckbag-balance-val">0</span>
+                        </div>
+                        <p>Total luck bag amount</p>
+                        <input type="number" id="luckbag-amount" placeholder="Input..." min="1">
+                        <p>Number of luck bag</p>
+                        <input type="text" id="luckbag-count" value="1-1000" readonly>
+                        <button id="emit-luckbag-btn" class="emit-btn">emit</button>
+                        <p style="text-align: right; margin-top: 15px;">
+                            <a href="#" id="luckbag-record-link" style="color: #666;">Luck Bag Record ></a>
+                        </p>
+                        <div class="luckbag-warning">
+                            *Unregistered friends who register through your luck bag link will automatically become your valid invitation and get the invitation energy
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
